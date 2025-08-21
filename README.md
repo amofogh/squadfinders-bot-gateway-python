@@ -7,27 +7,35 @@ This Django project converts Express/MongoDB models to Django with dual database
 - **Dual Database Setup**: SQLite for Django auth, MongoDB via djongo for custom models
 - **REST API**: Full CRUD operations for all models using Django REST Framework
 - **Admin Interface**: Custom admin with filtering, search, and display options
-- **Models**: Player, Message, AIResponse, and AdminUser converted from Mongoose schemas
+- **Models**: Player, Message, and AIResponse converted from Mongoose schemas
+- **API Documentation**: Swagger/OpenAPI documentation with interactive UI
+- **Environment Configuration**: Production-ready settings with .env support
 
 ## Setup
 
-1. Install dependencies:
+1. Copy environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+2. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Run migrations:
+3. Run migrations:
 ```bash
 python manage.py migrate
 python manage.py migrate --database=mongodb
 ```
 
-3. Create superuser:
+4. Create superuser:
 ```bash
 python manage.py createsuperuser
 ```
 
-4. Run development server:
+5. Run development server:
 ```bash
 python manage.py runserver
 ```
@@ -37,7 +45,25 @@ python manage.py runserver
 - `/api/players/` - Player CRUD operations
 - `/api/messages/` - Message CRUD operations  
 - `/api/airesponses/` - AI Response CRUD operations
-- `/api/adminusers/` - Admin User CRUD operations
+
+## API Documentation
+
+- `/swagger/` - Interactive Swagger UI
+- `/redoc/` - ReDoc documentation
+- `/swagger.json` - OpenAPI schema
+
+## Environment Variables
+
+Create a `.env` file with the following variables:
+
+```env
+SECRET_KEY=your-secret-key-here
+DEBUG=False
+ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
+MONGO_DB_NAME=players-py
+MONGO_HOST=mongodb://user:password@host:port/?authSource=admin
+CORS_ALLOW_ALL_ORIGINS=False
+```
 
 ## Docker
 
@@ -48,18 +74,15 @@ docker build -t django-mongodb-app .
 docker run -p 8000:8000 django-mongodb-app
 ```
 
-## Configuration
+## Production Deployment
 
-Update `django_project/settings.py` with your MongoDB connection details:
+For production deployment:
 
-```python
-DATABASES = {
-    'mongodb': {
-        'ENGINE': 'djongo',
-        'NAME': 'your_mongo_db_name',
-        'CLIENT': {
-            'host': 'mongodb://your-mongo-host:27017',
-        }
-    }
-}
-```
+1. Set `DEBUG=False` in your `.env` file
+2. Configure proper `ALLOWED_HOSTS`
+3. Use a strong `SECRET_KEY`
+4. Set `CORS_ALLOW_ALL_ORIGINS=False` and configure specific origins
+5. Use environment variables for sensitive data
+6. Configure proper database backups
+7. Set up SSL/HTTPS
+8. Configure static file serving

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Player, Message, AIResponse, AdminUser
+from .models import Player, Message, AIResponse
 
 @admin.register(Player)
 class PlayerAdmin(admin.ModelAdmin):
@@ -94,20 +94,3 @@ class AIResponseAdmin(admin.ModelAdmin):
     def reason_preview(self, obj):
         return (obj.reason[:50] + '...') if obj.reason and len(obj.reason) > 50 else obj.reason
     reason_preview.short_description = 'Reason'
-
-@admin.register(AdminUser)
-class AdminUserAdmin(admin.ModelAdmin):
-    list_display = ['email', 'role']
-    list_filter = ['role']
-    search_fields = ['email']
-    
-    fieldsets = (
-        ('User Info', {
-            'fields': ('email', 'password', 'role')
-        }),
-    )
-    
-    def save_model(self, request, obj, form, change):
-        if form.cleaned_data.get('password'):
-            obj.password = form.cleaned_data['password']
-        super().save_model(request, obj, form, change)

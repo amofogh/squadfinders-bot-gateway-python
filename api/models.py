@@ -1,6 +1,4 @@
 from djongo import models
-from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.hashers import make_password
 import json
 
 class SenderInfo(models.Model):
@@ -94,25 +92,3 @@ class AIResponse(models.Model):
 
     def __str__(self):
         return f"AI Response {self.message_id} - LFG: {self.is_lfg}"
-
-class AdminUser(models.Model):
-    email = models.EmailField(unique=True)
-    password = models.CharField(max_length=128)
-    role = models.CharField(
-        max_length=20,
-        choices=[
-            ('admin', 'Admin'),
-            ('viewer', 'Viewer'),
-        ]
-    )
-
-    def save(self, *args, **kwargs):
-        if self.password and not self.password.startswith('pbkdf2_'):
-            self.password = make_password(self.password)
-        super().save(*args, **kwargs)
-
-    class Meta:
-        db_table = 'adminusers'
-
-    def __str__(self):
-        return f"{self.email} - {self.role}"
