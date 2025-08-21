@@ -1,33 +1,8 @@
 from djongo import models
 import json
 
-class SenderInfo(models.Model):
-    id = models.CharField(max_length=255, null=True, blank=True)
-    username = models.CharField(max_length=255, null=True, blank=True)
-    name = models.CharField(max_length=255, null=True, blank=True)
-    gender = models.CharField(
-        max_length=20,
-        choices=[
-            ('unknown', 'Unknown'),
-            ('male', 'Male'),
-            ('female', 'Female'),
-            ('other', 'Other'),
-        ],
-        default='unknown'
-    )
-    
-    class Meta:
-        abstract = True
-
-class GroupInfo(models.Model):
-    group_id = models.CharField(max_length=255, null=True, blank=True)
-    group_title = models.CharField(max_length=255, null=True, blank=True)
-    group_username = models.CharField(max_length=255, null=True, blank=True)
-    
-    class Meta:
-        abstract = True
-
 class Player(models.Model):
+    _id = models.ObjectIdField()
     message_id = models.IntegerField(unique=True, db_index=True)
     message_date = models.DateTimeField()
     sender = models.JSONField(default=dict)
@@ -51,14 +26,12 @@ class Player(models.Model):
 
     class Meta:
         db_table = 'players'
-        indexes = [
-            models.Index(fields=['message_id']),
-        ]
 
     def __str__(self):
         return f"Player {self.message_id} - {self.sender.get('username', 'Unknown')}"
 
 class Message(models.Model):
+    _id = models.ObjectIdField()
     message_id = models.IntegerField(unique=True, db_index=True)
     message_date = models.DateTimeField()
     sender = models.JSONField(default=dict)
@@ -69,14 +42,12 @@ class Message(models.Model):
 
     class Meta:
         db_table = 'messages'
-        indexes = [
-            models.Index(fields=['message_id']),
-        ]
 
     def __str__(self):
         return f"Message {self.message_id} - {self.sender.get('username', 'Unknown')}"
 
 class AIResponse(models.Model):
+    _id = models.ObjectIdField()
     message_id = models.IntegerField(unique=True, db_index=True)
     message = models.TextField(null=True, blank=True)
     is_lfg = models.BooleanField(default=False)
@@ -86,9 +57,6 @@ class AIResponse(models.Model):
 
     class Meta:
         db_table = 'airesponses'
-        indexes = [
-            models.Index(fields=['message_id']),
-        ]
 
     def __str__(self):
         return f"AI Response {self.message_id} - LFG: {self.is_lfg}"

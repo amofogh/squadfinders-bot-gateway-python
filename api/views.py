@@ -36,7 +36,8 @@ class PlayerViewSet(viewsets.ModelViewSet):
         if game_mode is not None:
             queryset = queryset.filter(game_mode__icontains=game_mode)
             
-        return queryset.order_by('-message_date')
+        # Avoid ORDER BY with djongo - let MongoDB handle natural ordering
+        return queryset
 
 class MessageViewSet(viewsets.ModelViewSet):
     """
@@ -63,7 +64,8 @@ class MessageViewSet(viewsets.ModelViewSet):
         if group_username is not None:
             queryset = queryset.filter(group__group_username__icontains=group_username)
             
-        return queryset.order_by('-message_date')
+        # Avoid ORDER BY with djongo - let MongoDB handle natural ordering
+        return queryset
 
 class AIResponseViewSet(viewsets.ModelViewSet):
     """
@@ -87,4 +89,5 @@ class AIResponseViewSet(viewsets.ModelViewSet):
             is_lfg_bool = is_lfg.lower() == 'true'
             queryset = queryset.filter(is_lfg=is_lfg_bool)
             
-        return queryset.order_by('-created_at')
+        # Avoid ORDER BY with djongo - let MongoDB handle natural ordering
+        return queryset

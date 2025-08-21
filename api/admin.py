@@ -7,6 +7,7 @@ class PlayerAdmin(admin.ModelAdmin):
     list_filter = ['platform', 'active', 'message_date', 'game_mode']
     search_fields = ['message_id', 'message', 'sender__username', 'group__group_title']
     readonly_fields = ['created_at', 'updated_at']
+    ordering = []  # Disable default ordering to avoid ORDER BY issues
     
     fieldsets = (
         ('Message Info', {
@@ -38,9 +39,9 @@ class PlayerAdmin(admin.ModelAdmin):
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
     list_display = ['message_date', 'get_group_title', 'get_sender_username', 'message_preview']
-    list_filter = ['message_date']
     search_fields = ['message_id', 'message', 'sender__username', 'group__group_title']
     readonly_fields = ['created_at', 'updated_at']
+    ordering = []  # Disable default ordering to avoid ORDER BY issues
     
     fieldsets = (
         ('Message Info', {
@@ -76,6 +77,7 @@ class AIResponseAdmin(admin.ModelAdmin):
     list_filter = ['is_lfg', 'created_at']
     search_fields = ['message_id', 'message', 'reason']
     readonly_fields = ['created_at', 'updated_at']
+    ordering = []  # Disable default ordering to avoid ORDER BY issues
     
     fieldsets = (
         ('AI Response Info', {
