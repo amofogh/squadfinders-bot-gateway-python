@@ -1,10 +1,9 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from .models import Player, Message, AIResponse
 from .serializers import PlayerSerializer, MessageSerializer, AIResponseSerializer
-from .authentication import APIKeyAuthentication
-from .permissions import HasAPIKey
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -13,22 +12,14 @@ class PlayerViewSet(viewsets.ModelViewSet):
     ViewSet for managing Player records.
     
     Provides CRUD operations for players with filtering capabilities.
-    Requires API key authentication via X-API-Key header.
+    Requires user to be logged in through Django admin.
     """
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
-    authentication_classes = [APIKeyAuthentication]
-    permission_classes = [HasAPIKey]
+    permission_classes = [IsAuthenticated]
     
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter(
-                'X-API-Key', 
-                openapi.IN_HEADER, 
-                description="API Key for authentication", 
-                type=openapi.TYPE_STRING,
-                required=True
-            ),
             openapi.Parameter('platform', openapi.IN_QUERY, description="Filter by platform (PC, Console, unknown)", type=openapi.TYPE_STRING),
             openapi.Parameter('active', openapi.IN_QUERY, description="Filter by active status (true/false)", type=openapi.TYPE_BOOLEAN),
             openapi.Parameter('game_mode', openapi.IN_QUERY, description="Filter by game mode (partial match)", type=openapi.TYPE_STRING),
@@ -58,22 +49,14 @@ class MessageViewSet(viewsets.ModelViewSet):
     ViewSet for managing Message records.
     
     Provides CRUD operations for messages with filtering capabilities.
-    Requires API key authentication via X-API-Key header.
+    Requires user to be logged in through Django admin.
     """
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
-    authentication_classes = [APIKeyAuthentication]
-    permission_classes = [HasAPIKey]
+    permission_classes = [IsAuthenticated]
     
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter(
-                'X-API-Key', 
-                openapi.IN_HEADER, 
-                description="API Key for authentication", 
-                type=openapi.TYPE_STRING,
-                required=True
-            ),
             openapi.Parameter('username', openapi.IN_QUERY, description="Filter by sender username (partial match)", type=openapi.TYPE_STRING),
             openapi.Parameter('group_username', openapi.IN_QUERY, description="Filter by group username (partial match)", type=openapi.TYPE_STRING),
         ]
@@ -100,22 +83,14 @@ class AIResponseViewSet(viewsets.ModelViewSet):
     ViewSet for managing AI Response records.
     
     Provides CRUD operations for AI responses with filtering capabilities.
-    Requires API key authentication via X-API-Key header.
+    Requires user to be logged in through Django admin.
     """
     queryset = AIResponse.objects.all()
     serializer_class = AIResponseSerializer
-    authentication_classes = [APIKeyAuthentication]
-    permission_classes = [HasAPIKey]
+    permission_classes = [IsAuthenticated]
     
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter(
-                'X-API-Key', 
-                openapi.IN_HEADER, 
-                description="API Key for authentication", 
-                type=openapi.TYPE_STRING,
-                required=True
-            ),
             openapi.Parameter('is_lfg', openapi.IN_QUERY, description="Filter by LFG status (true/false)", type=openapi.TYPE_BOOLEAN),
         ]
     )

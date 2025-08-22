@@ -110,10 +110,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Django REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'api.authentication.APIKeyAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'api.permissions.HasAPIKey',
+        'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 50
@@ -132,13 +132,6 @@ if not CORS_ALLOW_ALL_ORIGINS:
 
 # Swagger settings
 SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS': {
-        'API Key': {
-            'type': 'apiKey',
-            'name': 'X-API-Key',
-            'in': 'header'
-        }
-    },
     'USE_SESSION_AUTH': True,
     'JSON_EDITOR': True,
     'SUPPORTED_SUBMIT_METHODS': [
@@ -149,6 +142,7 @@ SWAGGER_SETTINGS = {
         'patch'
     ],
     'LOGIN_URL': '/admin/login/',
+    'LOGOUT_URL': '/admin/logout/',
 }
 
 REDOC_SETTINGS = {
