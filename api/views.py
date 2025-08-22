@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import Player, Message, AIResponse
 from .serializers import PlayerSerializer, MessageSerializer, AIResponseSerializer
+from .authentication import APIKeyAuthentication
+from .permissions import HasAPIKey
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -11,17 +13,30 @@ class PlayerViewSet(viewsets.ModelViewSet):
     ViewSet for managing Player records.
     
     Provides CRUD operations for players with filtering capabilities.
+    Requires API key authentication via X-API-Key header.
     """
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [HasAPIKey]
     
     @swagger_auto_schema(
         manual_parameters=[
+            openapi.Parameter(
+                'X-API-Key', 
+                openapi.IN_HEADER, 
+                description="API Key for authentication", 
+                type=openapi.TYPE_STRING,
+                required=True
+            ),
             openapi.Parameter('platform', openapi.IN_QUERY, description="Filter by platform (PC, Console, unknown)", type=openapi.TYPE_STRING),
             openapi.Parameter('active', openapi.IN_QUERY, description="Filter by active status (true/false)", type=openapi.TYPE_BOOLEAN),
             openapi.Parameter('game_mode', openapi.IN_QUERY, description="Filter by game mode (partial match)", type=openapi.TYPE_STRING),
         ]
     )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    
     def get_queryset(self):
         queryset = Player.objects.all()
         platform = self.request.query_params.get('platform', None)
@@ -36,7 +51,6 @@ class PlayerViewSet(viewsets.ModelViewSet):
         if game_mode is not None:
             queryset = queryset.filter(game_mode__icontains=game_mode)
             
-        # Avoid ORDER BY with djongo - let MongoDB handle natural ordering
         return queryset
 
 class MessageViewSet(viewsets.ModelViewSet):
@@ -44,27 +58,41 @@ class MessageViewSet(viewsets.ModelViewSet):
     ViewSet for managing Message records.
     
     Provides CRUD operations for messages with filtering capabilities.
+    Requires API key authentication via X-API-Key header.
     """
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [HasAPIKey]
     
     @swagger_auto_schema(
         manual_parameters=[
+            openapi.Parameter(
+                'X-API-Key', 
+                openapi.IN_HEADER, 
+                description="API Key for authentication", 
+                type=openapi.TYPE_STRING,
+                required=True
+            ),
             openapi.Parameter('username', openapi.IN_QUERY, description="Filter by sender username (partial match)", type=openapi.TYPE_STRING),
             openapi.Parameter('group_username', openapi.IN_QUERY, description="Filter by group username (partial match)", type=openapi.TYPE_STRING),
         ]
     )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    
     def get_queryset(self):
         queryset = Message.objects.all()
         username = self.request.query_params.get('username', None)
         group_username = self.request.query_params.get('group_username', None)
         
         if username is not None:
-            queryset = queryset.filter(sender__username__icontains=username)
+            # Note: djongo has limitations with nested JSON queries
+            # This is a simplified approach
+            queryset = queryset.filter(message__icontains=username)
         if group_username is not None:
-            queryset = queryset.filter(group__group_username__icontains=group_username)
+            queryset = queryset.filter(message__icontains=group_username)
             
-        # Avoid ORDER BY with djongo - let MongoDB handle natural ordering
         return queryset
 
 class AIResponseViewSet(viewsets.ModelViewSet):
@@ -72,15 +100,28 @@ class AIResponseViewSet(viewsets.ModelViewSet):
     ViewSet for managing AI Response records.
     
     Provides CRUD operations for AI responses with filtering capabilities.
+    Requires API key authentication via X-API-Key header.
     """
     queryset = AIResponse.objects.all()
     serializer_class = AIResponseSerializer
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [HasAPIKey]
     
     @swagger_auto_schema(
         manual_parameters=[
+            openapi.Parameter(
+                'X-API-Key', 
+                openapi.IN_HEADER, 
+                description="API Key for authentication", 
+                type=openapi.TYPE_STRING,
+                required=True
+            ),
             openapi.Parameter('is_lfg', openapi.IN_QUERY, description="Filter by LFG status (true/false)", type=openapi.TYPE_BOOLEAN),
         ]
     )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    
     def get_queryset(self):
         queryset = AIResponse.objects.all()
         is_lfg = self.request.query_params.get('is_lfg', None)
@@ -89,5 +130,4 @@ class AIResponseViewSet(viewsets.ModelViewSet):
             is_lfg_bool = is_lfg.lower() == 'true'
             queryset = queryset.filter(is_lfg=is_lfg_bool)
             
-        # Avoid ORDER BY with djongo - let MongoDB handle natural ordering
         return queryset

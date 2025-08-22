@@ -5,8 +5,8 @@ class Player(models.Model):
     _id = models.ObjectIdField()
     message_id = models.IntegerField(unique=True, db_index=True)
     message_date = models.DateTimeField()
-    sender = models.JSONField(default=dict)
-    group = models.JSONField(default=dict)
+    sender = models.JSONField(default=dict, blank=True)
+    group = models.JSONField(default=dict, blank=True)
     message = models.TextField(null=True, blank=True)
     platform = models.CharField(
         max_length=20,
@@ -19,7 +19,7 @@ class Player(models.Model):
     )
     rank = models.CharField(max_length=255, null=True, blank=True)
     players_count = models.IntegerField(null=True, blank=True)
-    game_mode = models.CharField(max_length=255, default='')
+    game_mode = models.CharField(max_length=255, default='', blank=True)
     active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -28,14 +28,15 @@ class Player(models.Model):
         db_table = 'players'
 
     def __str__(self):
-        return f"Player {self.message_id} - {self.sender.get('username', 'Unknown')}"
+        sender_username = self.sender.get('username', 'Unknown') if isinstance(self.sender, dict) else 'Unknown'
+        return f"Player {self.message_id} - {sender_username}"
 
 class Message(models.Model):
     _id = models.ObjectIdField()
     message_id = models.IntegerField(unique=True, db_index=True)
     message_date = models.DateTimeField()
-    sender = models.JSONField(default=dict)
-    group = models.JSONField(default=dict)
+    sender = models.JSONField(default=dict, blank=True)
+    group = models.JSONField(default=dict, blank=True)
     message = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -44,7 +45,8 @@ class Message(models.Model):
         db_table = 'messages'
 
     def __str__(self):
-        return f"Message {self.message_id} - {self.sender.get('username', 'Unknown')}"
+        sender_username = self.sender.get('username', 'Unknown') if isinstance(self.sender, dict) else 'Unknown'
+        return f"Message {self.message_id} - {sender_username}"
 
 class AIResponse(models.Model):
     _id = models.ObjectIdField()
