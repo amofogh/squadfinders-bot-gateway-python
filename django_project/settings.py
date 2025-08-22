@@ -71,7 +71,7 @@ DATABASES = {
         'ENGINE': 'djongo',
         'NAME': os.getenv('MONGO_DB_NAME', 'players-py'),
         'CLIENT': {
-            'host': os.getenv('MONGO_HOST', 'mongodb://localhost:27017'),
+            'host': os.getenv('MONGO_HOST', 'mongodb://admin:R0XP2UBw75muBr39@185.79.96.249:27017/?authSource=admin'),
         }
     }
 }

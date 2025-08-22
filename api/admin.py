@@ -7,8 +7,10 @@ class PlayerAdmin(admin.ModelAdmin):
     list_filter = ['platform', 'active', 'message_date', 'game_mode']
     search_fields = ['message_id', 'message', 'sender__username', 'group__group_title']
     readonly_fields = ['created_at', 'updated_at']
-    ordering = []  # Disable default ordering to avoid ORDER BY issues
-    
+    # ordering = []  # Disable default ordering to avoid ORDER BY issues
+    def get_queryset(self, request):
+        return super().get_queryset(request).order_by()
+
     fieldsets = (
         ('Message Info', {
             'fields': ('message_id', 'message_date', 'message')
